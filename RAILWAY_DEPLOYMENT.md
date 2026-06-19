@@ -53,7 +53,6 @@ node dist/main
 
 ```
 NODE_ENV=production
-PORT=3000
 API_PREFIX=api
 DATABASE_URL=postgresql://postgres.YOUR_PASSWORD@aws-1-sa-east-1.pooler.supabase.com:5432/postgres
 SUPABASE_URL=https://tu-project-id.supabase.co

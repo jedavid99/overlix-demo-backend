@@ -78,40 +78,17 @@ async function bootstrap() {
   }
 
   // Graceful shutdown
-  const gracefulShutdown = async (signal: string) => {
-    console.log(`Received ${signal}, shutting down gracefully...`);
-    
-    // Close database connection
-    try {
-      const databaseModule = app.get('DATABASE_POOL');
-      if (databaseModule) {
-        await databaseModule.end();
-        console.log('Database connection closed');
-      }
-    } catch (error) {
-      console.error('Error closing database connection:', error);
-    }
-
-    // Close Redis connection (optional - may not be available)
-    try {
-      if ((app as any)._graph) {
-        const redisModule = (app as any)._graph._providers.find((p: any) => p.token === 'REDIS_CLIENT');
-        if (redisModule && redisModule.instance) {
-          await redisModule.instance.quit();
-          console.log('Redis connection closed');
-        }
-      }
-    } catch (error) {
-      // Redis may not be configured or available, ignore error silently
-    }
-
+  process.on('SIGTERM', async () => {
+    logger.log('SIGTERM received, closing application...', 'Bootstrap');
     await app.close();
     process.exit(0);
-  };
+  });
 
-  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-  process.on('SIGHUP', () => gracefulShutdown('SIGHUP'));
+  process.on('SIGINT', async () => {
+    logger.log('SIGINT received, closing application...', 'Bootstrap');
+    await app.close();
+    process.exit(0);
+  });
 }
 
 bootstrap();
