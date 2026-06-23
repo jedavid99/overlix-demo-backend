@@ -621,6 +621,30 @@ export class AuthService {
     }
   }
 
+  async logout(userId: string, user: CurrentUserData) {
+    const client = await this.pool.connect();
+    try {
+      // Log audit
+      await this.logAudit(
+        client,
+        userId,
+        user.empresaId,
+        'logout',
+        'auth',
+        'users',
+        userId,
+        'Cierre de sesión',
+      );
+
+      return {
+        success: true,
+        message: 'Sesión cerrada correctamente',
+      };
+    } finally {
+      client.release();
+    }
+  }
+
   async deleteUser(userId: string, user: CurrentUserData) {
     const client = await this.pool.connect();
     try {

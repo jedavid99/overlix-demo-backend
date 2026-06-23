@@ -45,11 +45,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout() {
-    return {
-      success: true,
-      message: 'Sesión cerrada correctamente',
-    };
+  async logout(@CurrentUser() user: CurrentUserData) {
+    return this.authService.logout(user.id, user);
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
