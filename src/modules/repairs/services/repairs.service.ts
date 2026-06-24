@@ -237,7 +237,7 @@ export class RepairsService {
       const repair = existingRepair.rows[0];
 
       // Validate state transitions
-      if (updateData.estado) {
+      if (updateData.estado && updateData.estado !== repair.estado) {
         const estado = updateData.estado as string;
         const validTransitions: Record<string, string[]> = {
           [RepairStatus.DIAGNOSTIC]: [RepairStatus.IN_PROGRESS, RepairStatus.CANCELLED],
