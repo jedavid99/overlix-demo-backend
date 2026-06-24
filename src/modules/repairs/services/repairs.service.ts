@@ -47,20 +47,25 @@ export class RepairsService {
       // Create repair
       const result = await client.query(
         `INSERT INTO repairs 
-         (empresa_id, numero_reparacion, cliente_id, dispositivo, marca, modelo, numero_serie, problema_reportado, 
-          fecha_ingreso, hora_ingreso, estado, prioridad, tecnico_asignado_id, fecha_estimada_entrega, tiempo_estimado_minutos,
-          costo_piezas, costo_mano_obra, total_reparacion, garantia_meses, usuario_id_creacion)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 0, 0, 0, 3, $16)
-         RETURNING id, numero_reparacion, estado, prioridad`,
+         (empresa_id, numero_reparacion, cliente_id, dispositivo, categoria_dispositivo, marca, modelo, numero_serie, 
+          problema_reportado, condicion_estetica, accesorios_incluidos, fecha_ingreso, hora_ingreso, estado, prioridad, 
+          tecnico_asignado_id, fecha_estimada_entrega, tiempo_estimado_minutos, total_reparacion, notas, pagado, metodo_pago_id,
+          tipo_seguridad, pin_acceso, patron_puntos, secuencia_patron, chequeo_hardware,
+          costo_piezas, costo_mano_obra, garantia_meses, usuario_id_creacion)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, 0, 0, 3, $29)
+         RETURNING *`,
         [
           user.empresaId,
           numeroReparacion,
           createRepairDto.cliente_id,
           createRepairDto.dispositivo,
+          createRepairDto.categoria_dispositivo || null,
           createRepairDto.marca || null,
           createRepairDto.modelo || null,
           createRepairDto.numero_serie || null,
           createRepairDto.problema_reportado,
+          createRepairDto.condicion_estetica || null,
+          createRepairDto.accesorios_incluidos || null,
           createRepairDto.fecha_ingreso,
           new Date().toTimeString().split(' ')[0], // Current time
           RepairStatus.DIAGNOSTIC,
@@ -68,6 +73,15 @@ export class RepairsService {
           createRepairDto.tecnico_asignado_id || null,
           createRepairDto.fecha_estimada_entrega || null,
           createRepairDto.tiempo_estimado_minutos || null,
+          createRepairDto.total_reparacion || 0,
+          createRepairDto.notas || null,
+          createRepairDto.pagado !== undefined ? createRepairDto.pagado : false,
+          createRepairDto.metodo_pago_id || null,
+          createRepairDto.tipo_seguridad || null,
+          createRepairDto.pin_acceso || null,
+          createRepairDto.patron_puntos || null,
+          createRepairDto.secuencia_patron || null,
+          createRepairDto.chequeo_hardware || null,
           user.id,
         ],
       );
