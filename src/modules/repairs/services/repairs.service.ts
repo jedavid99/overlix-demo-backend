@@ -270,19 +270,24 @@ export class RepairsService {
 
       // Build dynamic update query
       const updates: string[] = [];
-      const values: (string | number)[] = [];
+      const values: (string | number | boolean | any[] | Record<string, any>)[] = [];
       let paramCount = 0;
 
       const allowedFields = [
         'estado', 'diagnosis', 'reparacion_realizada', 'tecnico_asignado_id',
         'fecha_estimada_entrega', 'costo_piezas', 'costo_mano_obra', 'notas',
+        'categoria_dispositivo', 'marca', 'modelo', 'numero_serie',
+        'condicion_estetica', 'accesorios_incluidos', 'tiempo_estimado_minutos',
+        'total_reparacion', 'pagado', 'metodo_pago_id',
+        'tipo_seguridad', 'pin_acceso', 'patron_puntos', 'secuencia_patron',
+        'chequeo_hardware',
       ];
 
       for (const field of allowedFields) {
         if (updateData[field] !== undefined) {
           paramCount++;
           updates.push(`${field} = $${paramCount + 2}`);
-          values.push(updateData[field] as string | number);
+          values.push(updateData[field]);
         }
       }
 
