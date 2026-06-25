@@ -278,7 +278,7 @@ export class RepairsService {
 
       // Build dynamic update query
       const updates: string[] = [];
-      const values: (string | number | boolean | any[] | Record<string, any>)[] = [];
+      const values: (string | number | boolean | any[] | Record<string, any> | null)[] = [];
       let paramCount = 0;
 
       const allowedFields = [
@@ -295,7 +295,7 @@ export class RepairsService {
         if (updateData[field] !== undefined) {
           paramCount++;
           updates.push(`${field} = $${paramCount + 2}`);
-          values.push(updateData[field]);
+          values.push(updateData[field] as any);
         }
       }
 
