@@ -107,6 +107,7 @@ export class RepairsService {
     estado?: string,
     cliente_id?: string,
     tecnico_id?: string,
+    problema_reportado?: string,
     prioridad?: string,
     fecha_desde?: string,
     fecha_hasta?: string,
@@ -135,6 +136,12 @@ export class RepairsService {
         paramCount++;
         whereClause += ` AND r.tecnico_asignado_id = $${paramCount}`;
         params.push(tecnico_id);
+      }
+
+      if (problema_reportado) {
+        paramCount++;
+        whereClause += ` AND r.problema_reportado ILIKE $${paramCount}`;
+        params.push(`%${problema_reportado}%`);
       }
 
       if (prioridad) {
