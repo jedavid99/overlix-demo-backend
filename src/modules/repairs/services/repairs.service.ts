@@ -165,8 +165,9 @@ export class RepairsService {
 
       // Get repairs with client and technician names
       const result = await client.query(
-        `SELECT r.id, r.numero_reparacion, r.dispositivo, r.estado, r.prioridad, r.fecha_ingreso, r.fecha_estimada_entrega,
-                c.nombre_completo as cliente_nombre, u.nombre_completo as tecnico_nombre
+        `SELECT r.*,
+                c.nombre_completo as cliente_nombre, c.telefono as cliente_telefono, c.email as cliente_email,
+                u.nombre_completo as tecnico_nombre
          FROM repairs r
          LEFT JOIN clients c ON r.cliente_id = c.id
          LEFT JOIN users u ON r.tecnico_asignado_id = u.id
@@ -324,7 +325,7 @@ export class RepairsService {
         UPDATE repairs
         SET ${updates.join(', ')}
         WHERE id = $1 AND empresa_id = $2
-        RETURNING id, numero_reparacion, estado
+        RETURNING *
       `;
 
       const result = await client.query(query, [id, user.empresaId, ...values]);
