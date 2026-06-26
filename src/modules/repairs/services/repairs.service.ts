@@ -173,7 +173,7 @@ export class RepairsService {
       // Get repairs with client and technician names
       const result = await client.query(
         `SELECT r.*,
-                c.nombre_completo as cliente_nombre, c.telefono as cliente_telefono, c.email as cliente_email,
+                c.nombre_completo as cliente_nombre, c.telefono as cliente_telefono, c.email as cliente_email, c.dni as cliente_dni,
                 u.nombre_completo as tecnico_nombre
          FROM repairs r
          LEFT JOIN clients c ON r.cliente_id = c.id
