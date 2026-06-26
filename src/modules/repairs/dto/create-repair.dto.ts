@@ -2,12 +2,12 @@ import { IsString, IsNotEmpty, IsOptional, IsEnum, IsDate, IsNumber, Min, IsUUID
 import { Type } from 'class-transformer';
 
 export enum RepairStatus {
-  DIAGNOSTIC = 'diagnostic',
-  IN_PROGRESS = 'in_progress',
-  WAITING_PARTS = 'waiting_parts',
-  TESTING = 'testing',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
+  DIAGNOSTIC = 'Diagnóstico',
+  IN_PROGRESS = 'En Progreso',
+  WAITING_PARTS = 'Esperando Repuestos',
+  TESTING = 'Reparado',
+  COMPLETED = 'Garantía',
+  CANCELLED = 'Irreparable',
 }
 
 export enum RepairPriority {
