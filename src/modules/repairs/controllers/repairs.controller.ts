@@ -60,6 +60,16 @@ export class RepairsController {
     return this.repairsService.update(id, updateData, user);
   }
 
+  @Put(':id/estado')
+  @RequirePermission('reparaciones', 'actualizar')
+  async updateStatus(
+    @Param('id') id: string,
+    @Body('estado') estado: string,
+    @CurrentUser() user: CurrentUserData,
+  ) {
+    return this.repairsService.updateStatus(id, estado, user);
+  }
+
   @Put(':id/completar')
   @RequirePermission('reparaciones', 'actualizar')
   async completeRepair(

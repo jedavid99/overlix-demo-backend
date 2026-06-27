@@ -412,6 +412,60 @@ export class RepairsService {
     }
   }
 
+  async updateStatus(id: string, estado: string, user: CurrentUserData) {
+    const client = await this.pool.connect();
+
+    try {
+      // Check if repair exists
+      const existingRepair = await client.query(
+        'SELECT * FROM repairs WHERE id = $1 AND empresa_id = $2',
+        [id, user.empresaId],
+      );
+
+      if (existingRepair.rows.length === 0) {
+        throw new NotFoundException('Reparación no encontrada');
+      }
+
+      const repair = existingRepair.rows[0];
+
+      // Validate state transitions if changing to a different state
+      if (estado !== repair.estado) {
+        const validTransitions: Record<string, string[]> = {
+          [RepairStatus.DIAGNOSTIC]: [RepairStatus.IN_PROGRESS, RepairStatus.CANCELLED],
+          [RepairStatus.IN_PROGRESS]: [RepairStatus.WAITING_PARTS, RepairStatus.TESTING, RepairStatus.COMPLETED, RepairStatus.CANCELLED],
+          [RepairStatus.WAITING_PARTS]: [RepairStatus.IN_PROGRESS, RepairStatus.CANCELLED],
+          [RepairStatus.TESTING]: [RepairStatus.IN_PROGRESS, RepairStatus.COMPLETED, RepairStatus.CANCELLED],
+          [RepairStatus.COMPLETED]: [], // Terminal state
+          [RepairStatus.CANCELLED]: [], // Terminal state
+        };
+
+        const allowedTransitions = validTransitions[repair.estado] || [];
+        if (!allowedTransitions.includes(estado)) {
+          throw new BadRequestException(
+            `Transición de estado inválida: ${repair.estado} -> ${estado}`,
+          );
+        }
+      }
+
+      // Update status
+      const result = await client.query(
+        'UPDATE repairs SET estado = $1, fecha_actualizacion = CURRENT_TIMESTAMP WHERE id = $2 AND empresa_id = $3 RETURNING *',
+        [estado, id, user.empresaId],
+      );
+
+      // Log audit
+      await this.logAudit(user.id, user.empresaId, 'actualizar', 'reparaciones', 'repairs', id, `Se cambió estado de reparación: ${repair.numero_reparacion} de ${repair.estado} a ${estado}`);
+
+      return {
+        success: true,
+        message: 'Estado actualizado',
+        data: result.rows[0],
+      };
+    } finally {
+      client.release();
+    }
+  }
+
   async remove(id: string, user: CurrentUserData) {
     const client = await this.pool.connect();
 
